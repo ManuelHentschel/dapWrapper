@@ -1,6 +1,6 @@
 
 import { EventEmitter } from 'events';
-import * as vscode from 'vscode';
+// import * as vscode from 'vscode';
 import { config, escapeForRegex, getRStartupArguments, timeout, escapeStringForR } from "./utils";
 import { checkPackageVersion } from './installRPackage';
 
@@ -100,7 +100,8 @@ export class DebugRuntime extends EventEmitter {
 
 		// start R in child process
 		const rStartupArguments  = await getRStartupArguments();
-		const openFolders = vscode.workspace.workspaceFolders;
+		// const openFolders = vscode.workspace.workspaceFolders;
+		const openFolders = undefined;
 		if(openFolders){
 			rStartupArguments.cwd = openFolders[0].uri.fsPath;
 		}

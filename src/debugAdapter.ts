@@ -12,10 +12,14 @@ in `this.dispatchRequest()`.
 
 import { DebugRuntime } from './debugRuntime';
 import { DebugProtocol } from 'vscode-debugprotocol';
-import { InitializeRequest } from './debugProtocolModifications';
+import { InitializeRequest, LaunchRequest, LaunchRequestArguments } from './debugProtocolModifications';
 import { config, getVSCodePackageVersion } from './utils';
 
-import * as vscode from 'vscode';
+import * as events from 'events';
+
+import { Emitter } from './wrapper';
+
+// import * as vscode from 'vscode';
 
 import * as log from 'loglevel';
 const logger = log.getLogger("DebugSession");
@@ -37,10 +41,10 @@ function logMessage(message: DebugProtocol.ProtocolMessage){
 }
 
 
-export class DebugAdapter implements vscode.DebugAdapter {
+export class DebugAdapter {
 
     // properties
-	private sendMessage = new vscode.EventEmitter<DebugProtocol.ProtocolMessage>(); // used by onDidSendMessage
+	private sendMessage = new Emitter<DebugProtocol.ProtocolMessage>(); // used by onDidSendMessage
     private sequence: number = 0; // seq of messages sent to VS Code
 	private THREAD_ID = 1; // dummy value
     private runtime: DebugRuntime; // actually handles requests etc. that are not forwarded
@@ -60,7 +64,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
     public dispose(): void {};
     
     // used to send messages from R to VS Code
-	readonly onDidSendMessage: vscode.Event<DebugProtocol.ProtocolMessage> = this.sendMessage.event;
+	readonly onDidSendMessage = this.sendMessage.event;
 
     // used to send messages from VS Code to R
 	public handleMessage(msg: DebugProtocol.ProtocolMessage): void {
@@ -98,6 +102,13 @@ export class DebugAdapter implements vscode.DebugAdapter {
                 case 'launch':
                     dispatchToR = true;
                     sendResponse = false;
+                    (<LaunchRequest>request).arguments = {
+                        ...request.arguments,
+                        supportsWriteToStdinEvent: true,
+                        supportsShowingPromptRequest: true,
+                        supportsStdoutReading: true,
+                        ignoreFlowControl: false
+                    };
                     this.runtime.writeOutput('Launch Arguments:\n' + JSON.stringify(request.arguments, undefined, 2));
                     this.runtime.endOutputGroup();
                     break;
@@ -126,12 +137,12 @@ export class DebugAdapter implements vscode.DebugAdapter {
                 case 'continue':
                     // pass info about the currently open text editor
                     // can be used to start .vsc.debugSource(), when called from global workspace
-                    const doc = vscode.window.activeTextEditor.document;
-                    if(doc.uri.scheme === 'file'){
-                        const filename = doc.fileName;
-                        request.arguments.callDebugSource = true;
-                        request.arguments.source = {path: filename};
-                    };
+                    // const doc = vscode.window.activeTextEditor.document;
+                    // if(doc.uri.scheme === 'file'){
+                    //     const filename = doc.fileName;
+                    //     request.arguments.callDebugSource = true;
+                    //     request.arguments.source = {path: filename};
+                    // };
                     dispatchToR = true;
                     sendResponse = false;
                     break;

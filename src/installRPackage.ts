@@ -1,8 +1,8 @@
 
 import { getRDownloadLink, getRStartupArguments, config, getRequiredRPackageVersion } from './utils';
-import * as vscode from 'vscode';
-import { RSession } from './rSession';
-import { write } from 'fs';
+// import * as vscode from 'vscode';
+// import { RSession } from './rSession';
+// import { write } from 'fs';
 
 import Subject = require('await-notify');
 import semver = require('semver');
@@ -18,19 +18,19 @@ export type VersionCheckLevel = "none"|"required"|"recommended";
 
 
 export async function updateRPackage(packageName:string = 'vscDebugger') {
-    vscode.window.showInformationMessage('Installing R Packages...');
-    const url = getRDownloadLink(packageName);
-    const rPath = (await getRStartupArguments()).path;
-    const terminal = vscode.window.createTerminal('InstallRPackage');
-    terminal.show();
-    terminal.sendText(
-        rPath +
-        " --vanilla" +
-        " --silent" +
-        " -e \"install.packages('" + url + "', repos=NULL)\"" +
-        " -e \"install.packages('jsonlite', repos='http://cran.r-project.org')\"" +
-        " -e \"install.packages('R6', repos='http://cran.r-project.org')\""
-    );
+//     vscode.window.showInformationMessage('Installing R Packages...');
+//     const url = getRDownloadLink(packageName);
+//     const rPath = (await getRStartupArguments()).path;
+//     const terminal = vscode.window.createTerminal('InstallRPackage');
+//     terminal.show();
+//     terminal.sendText(
+//         rPath +
+//         " --vanilla" +
+//         " --silent" +
+//         " -e \"install.packages('" + url + "', repos=NULL)\"" +
+//         " -e \"install.packages('jsonlite', repos='http://cran.r-project.org')\"" +
+//         " -e \"install.packages('R6', repos='http://cran.r-project.org')\""
+//     );
 }
 
 export function explainRPackage(writeOutput: (text: string)=>void, message: string = ""){

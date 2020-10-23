@@ -1,8 +1,9 @@
 
-import { DebugProtocolMessage, window, workspace } from "vscode";
 import { platform } from "os";
 import { RStartupArguments } from './debugProtocolModifications';
 import * as net from 'net';
+
+import { PseudoConfiguration } from './wrapper';
 
 import path = require("path");
 import fs = require("fs");
@@ -10,8 +11,11 @@ import winreg = require("winreg");
 
 const packageJson = require('../package.json');
 
+const pseudoConfig = new PseudoConfiguration();
+
 export function config() {
-    return workspace.getConfiguration("rdebugger");
+    return pseudoConfig;
+    // return workspace.getConfiguration("rdebugger");
 }
 
 function getRfromEnvPath(platform: string) {
@@ -104,7 +108,7 @@ export async function getRStartupArguments(): Promise<RStartupArguments> {
     };
 
     if(rpath === ""){
-        window.showErrorMessage(`${process.platform} can't find R`);
+        // window.showErrorMessage(`${process.platform} can't find R`);
     }
     return ret;
 }

@@ -83,6 +83,10 @@ export type StrictDebugConfiguration = FunctionDebugConfiguration | FileDebugCon
 export interface LaunchRequestArguments extends DebugProtocol.LaunchRequestArguments, DebugConfiguration {
 }
 
+export interface LaunchRequest extends DebugProtocol.LaunchRequest {
+    arguments: LaunchRequestArguments;
+}
+
 export interface RStrings {
     prompt?: string;
     continue?: string;
